@@ -16,11 +16,11 @@ jobs:
 
       - name: Setup EndeavourOS Mirrors & Dependencies
         run: |
-          # ۱. آپدیت مخازن و نصب ابزارهای پایه و بیلد
+          # ۱. به‌روزرسانی مخازن پایه آرچ و نصب تمام ابزارهای مورد نیاز سیستم و بیلد
           pacman -Syu --noconfirm
-          pacman -S --noconfirm git wget squashfs-tools archiso dosfstools libisoburn lynx cpio dracut sudo
+          pacman -S --noconfirm git wget squashfs-tools archiso dosfstools libisoburn lynx cpio dracut sudo fakeroot debugedit binutils
 
-          # ۲. ساخت لیست میرورهای اختصاصی
+          # ۲. ساخت فایل لیست میرورهای رسمی و پایدار جهانی EndeavourOS
           mkdir -p /etc/pacman.d
           cat << 'EOF' > /etc/pacman.d/endeavouros-mirrorlist
           Server = https://mirror.alwyzon.net/endeavouros/repo/$repo/$arch
@@ -29,26 +29,36 @@ jobs:
           Server = https://mirror.moson.org/endeavouros/repo/$repo/$arch
           EOF
 
-          # ۳. معرفی مخزن به pacman
+          # ۳. معرفی مخزن اختصاصی EndeavourOS به تنظیمات pacman
           echo -e "\n[endeavouros]\nSigLevel = PackageOptional\nInclude = /etc/pacman.d/endeavouros-mirrorlist" >> /etc/pacman.conf
+          
+          # ۴. راه‌اندازی و هماهنگ‌سازی کلیدهای PGP برای رفع ارور تایید امضا (Unknown Trust)
+          pacman-key --init
+          pacman-key --populate archlinux
+          
+          # دریافت و تایید رسمی کلید دیجیتال توسعه‌دهنده اصلی مخازن (manuel)
+          pacman-key --recv-keys A367FB01AE54040E --keyserver keyserver.ubuntu.com
+          pacman-key --lsign-key A367FB01AE54040E
+
+          # ۵. همگام‌سازی نهایی تمام مخازن سیستم
           pacman -Sy --noconfirm
 
-          # ۴. ساخت یک کاربر غیر روت به نام 'builder' برای دور زدن محدودیت makepkg
+          # ۶. ساخت کاربر غیر روت 'builder' جهت اجرای ایمن دستور makepkg در مرحله بعد
           useradd -m builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           
-          # ۵. تغییر مالکیت پوشه پروژه به کاربر جدید
+          # تغییر مالکیت پوشه پروژه به کاربر جدید برای دسترسی کامل
           chown -R builder:builder ./
 
       - name: Prepare ISO Structure (As Non-Root)
         run: |
           chmod +x prepare.sh
-          # اجرای اسکریپت آماده‌سازی با کاربر غیر روت
+          # اجرای اسکریپت آماده‌سازی با کاربر غیر روت جهت دور زدن محدودیت امنیتی
           su builder -c "./prepare.sh"
 
       - name: Run Build (mkarchiso As Root)
         run: |
-          # ابزار mkarchiso برخلاف makepkg حتماً باید با دسترسی روت اجرا شود
+          # اجرای کامپایل و ساخت نهایی ایمیج با ابزار رسمی آرچ‌ایزو (دسترسی روت الزامی است)
           ./mkarchiso -v "."
 
       - name: Upload ISO Artifact
