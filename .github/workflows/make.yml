@@ -14,7 +14,7 @@ jobs:
       - name: Install Core Dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm git archiso pyyaml wget matrix-synapse-tools cpio dracut
+          pacman -S --noconfirm git archiso cpio dracut
 
       - name: Checkout Code
         uses: actions/checkout@v4
