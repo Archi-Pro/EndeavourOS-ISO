@@ -14,28 +14,29 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup EndeavourOS Repository & Dependencies
+      - name: Setup EndeavourOS Mirrors & Dependencies
         run: |
           # ۱. آپدیت کلیدها و سیستم پایه آرچ
           pacman -Syu --noconfirm
-          pacman -S --noconfirm git wget squashfs-tools archiso dosfstools libisoburn lynx
+          pacman -S --noconfirm git wget squashfs-tools archiso dosfstools libisoburn lynx cpio dracut
 
-          # ۲. اضافه کردن مخزن رسمی EndeavourOS به pacman (حیاتی برای دانلود calamares و پکیج‌های خاص)
-          echo -e "\n[endeavouros]\nSigLevel = PackageOptional\nServer = https://mirror.linux.net.nu/endeavouros/repo/\$repo/\$arch" >> /etc/pacman.conf
+          # ۲. دانلود مستقیم آخرین و به‌روزترین لیست میرورهای رسمی EndeavourOS
+          mkdir -p /etc/pacman.d
+          wget -O /etc/pacman.d/endeavouros-mirrorlist https://raw.githubusercontent.com/endeavouros-team/mirrors/master/endeavouros-mirrorlist
+
+          # ۳. معرفی مخزن EndeavourOS به pacman با استفاده از لیست میرورها
+          echo -e "\n[endeavouros]\nSigLevel = PackageOptional\nInclude = /etc/pacman.d/endeavouros-mirrorlist" >> /etc/pacman.conf
           
-          # ۳. آپدیت مجدد برای شناسایی مخزن جدید
+          # ۴. همگام‌سازی و آپدیت مخازن
           pacman -Sy --noconfirm
 
       - name: Prepare ISO Structure
         run: |
-          # اجرای اسکریپت آماده‌سازی محیط طبق README
           chmod +x prepare.sh
           ./prepare.sh
 
       - name: Run Build (mkarchiso)
         run: |
-          # اجرای دستور رسمی بیلد طبق README
-          # نقطه "." یعنی از پوشه فعلی به عنوان سورس استفاده کن
           sudo ./mkarchiso -v "."
 
       - name: Upload ISO Artifact
