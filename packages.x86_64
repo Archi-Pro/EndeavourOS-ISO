@@ -208,16 +208,6 @@ grsync
 partitionmanager
 hdparm
 
-# DESKTOP
-
-## Desktop environment
-
-## Browser
-firefox
-
-## System
-meld
-
 ## Fonts
 cantarell-fonts
 noto-fonts
@@ -232,18 +222,23 @@ ttf-opensans
 # ENDEAVOUROS REPO
 
 ## General
-endeavouros-branding
-eos-apps-info
-eos-hooks
-eos-log-tool
-eos-packagelist
-eos-quickstart
+ickstart
 eos-rankmirrors
 rate-mirrors
 reflector-simple
 welcome
 yay
 
-## Calamares EndeavourOS
-calamares
-ckbcomp
+## re.os
+
+sway
+kitty
+ttf-jetbrains-mono-nerd
+gum
+git
+arch-install-scripts
+parted
+wipefs
+util-linux
+e2fsprogs
+dosfstools
