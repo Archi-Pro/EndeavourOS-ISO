@@ -1,0 +1,35 @@
+name: Build :re.OS ISO
+
+on:
+  workflow_dispatch: # به شما اجازه می‌دهد بیلد را به صورت دستی با یک دکمه شروع کنید
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Arch Linux Environment
+        uses: jasonkline/run-on-arch-action@v2
+        id: run_on_arch
+        with:
+          architecture: x86_64
+          distribution: archlinux
+          run: |
+            # ۱. آپدیت مخازن و نصب ابزارهای بیلد
+            pacman -Syu --noconfirm
+            pacman -S --noconfirm archiso git pyyaml wget
+            
+            # ۲. اجرای اسکریپت بیلد اصلی EndeavourOS
+            # دسترسی روت برای ساخت فایل‌سیستم ایزو الزامی است
+            chmod +x build.sh
+            ./build.sh -v
+
+      - name: Upload ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: re-OS-Live-ISO
+          path: out/*.iso
+          if-no-files-found: error
+          retention-days: 5
