@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
 
-iso_name=":re.os Linux"
+iso_name=":re.os arch"
 iso_label="REOS_$(date +%Y%m)"
 iso_publisher=":re.os <https://github.com/re-code-pro>"
 iso_application=":re.os Live/Rescue CD"
