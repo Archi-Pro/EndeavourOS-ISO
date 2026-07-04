@@ -20,9 +20,14 @@ jobs:
           pacman -Syu --noconfirm
           pacman -S --noconfirm git wget squashfs-tools archiso dosfstools libisoburn lynx cpio dracut
 
-          # ۲. دانلود مستقیم آخرین و به‌روزترین لیست میرورهای رسمی EndeavourOS
+          # ۲. ساخت مستقیم فایل میرورها با سرورهای پایدار و اصلی جهانی EOS
           mkdir -p /etc/pacman.d
-          wget -O /etc/pacman.d/endeavouros-mirrorlist https://raw.githubusercontent.com/endeavouros-team/mirrors/master/endeavouros-mirrorlist
+          cat << 'EOF' > /etc/pacman.d/endeavouros-mirrorlist
+          Server = https://mirror.alwyzon.net/endeavouros/repo/$repo/$arch
+          Server = https://de.mirror.endeavouros.com/repo/$repo/$arch
+          Server = https://mirror.linux.net.nu/endeavouros/repo/$repo/$arch
+          Server = https://mirror.moson.org/endeavouros/repo/$repo/$arch
+          EOF
 
           # ۳. معرفی مخزن EndeavourOS به pacman با استفاده از لیست میرورها
           echo -e "\n[endeavouros]\nSigLevel = PackageOptional\nInclude = /etc/pacman.d/endeavouros-mirrorlist" >> /etc/pacman.conf
