@@ -1,5 +1,5 @@
-NAME="re.OS"
-PRETTY_NAME="re.OS Linux"
+NAME=":re.os"
+PRETTY_NAME=":re.os arch"
 ID=reos
 ID_LIKE=arch
 BUILD_ID=rolling
