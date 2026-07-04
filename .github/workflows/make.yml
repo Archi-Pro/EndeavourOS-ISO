@@ -16,11 +16,11 @@ jobs:
 
       - name: Setup EndeavourOS Mirrors & Dependencies
         run: |
-          # ۱. آپدیت کلیدها و سیستم پایه آرچ
+          # ۱. آپدیت مخازن و نصب ابزارهای پایه و بیلد
           pacman -Syu --noconfirm
-          pacman -S --noconfirm git wget squashfs-tools archiso dosfstools libisoburn lynx cpio dracut
+          pacman -S --noconfirm git wget squashfs-tools archiso dosfstools libisoburn lynx cpio dracut sudo
 
-          # ۲. ساخت مستقیم فایل میرورها با سرورهای پایدار و اصلی جهانی EOS
+          # ۲. ساخت لیست میرورهای اختصاصی
           mkdir -p /etc/pacman.d
           cat << 'EOF' > /etc/pacman.d/endeavouros-mirrorlist
           Server = https://mirror.alwyzon.net/endeavouros/repo/$repo/$arch
@@ -29,20 +29,27 @@ jobs:
           Server = https://mirror.moson.org/endeavouros/repo/$repo/$arch
           EOF
 
-          # ۳. معرفی مخزن EndeavourOS به pacman با استفاده از لیست میرورها
+          # ۳. معرفی مخزن به pacman
           echo -e "\n[endeavouros]\nSigLevel = PackageOptional\nInclude = /etc/pacman.d/endeavouros-mirrorlist" >> /etc/pacman.conf
-          
-          # ۴. همگام‌سازی و آپدیت مخازن
           pacman -Sy --noconfirm
 
-      - name: Prepare ISO Structure
+          # ۴. ساخت یک کاربر غیر روت به نام 'builder' برای دور زدن محدودیت makepkg
+          useradd -m builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          
+          # ۵. تغییر مالکیت پوشه پروژه به کاربر جدید
+          chown -R builder:builder ./
+
+      - name: Prepare ISO Structure (As Non-Root)
         run: |
           chmod +x prepare.sh
-          ./prepare.sh
+          # اجرای اسکریپت آماده‌سازی با کاربر غیر روت
+          su builder -c "./prepare.sh"
 
-      - name: Run Build (mkarchiso)
+      - name: Run Build (mkarchiso As Root)
         run: |
-          sudo ./mkarchiso -v "."
+          # ابزار mkarchiso برخلاف makepkg حتماً باید با دسترسی روت اجرا شود
+          ./mkarchiso -v "."
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
