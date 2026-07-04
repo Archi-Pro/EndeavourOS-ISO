@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
 
-iso_name="EndeavourOS_Titan"
-iso_label="EOS_$(date +%Y%m)"
-iso_publisher="EndeavourOS <https://endeavouros.com>"
-iso_application="EndeavourOS Live/Rescue CD"
+iso_name=":re.os Linux"
+iso_label="REOS_$(date +%Y%m)"
+iso_publisher=":re.os <https://github.com/re-code-pro>"
+iso_application=":re.os Live/Rescue CD"
 iso_version="$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
 install_dir="arch"
 buildmodes=('iso')
