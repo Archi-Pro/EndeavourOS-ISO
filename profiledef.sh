@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
 
-iso_name=":re.os arch"
+iso_name="re.os arch"
 iso_label="REOS_$(date +%Y%m)"
-iso_publisher=":re.os <https://github.com/re-code-pro>"
-iso_application=":re.os Live/Rescue CD"
+iso_publisher="re.os <https://github.com/re-code-pro>"
+iso_application="re.os Live/Rescue CD"
 iso_version="$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
 install_dir="arch"
 buildmodes=('iso')
