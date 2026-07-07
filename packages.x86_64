@@ -222,7 +222,6 @@ ttf-opensans
 # ENDEAVOUROS REPO
 
 ## General
-ickstart
 eos-rankmirrors
 rate-mirrors
 reflector-simple
@@ -238,7 +237,6 @@ gum
 git
 arch-install-scripts
 parted
-wipefs
 util-linux
 e2fsprogs
 dosfstools
